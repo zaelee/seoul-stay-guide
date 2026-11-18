@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="이태원·을지로 4인 및 7인 에어비앤비 숙소 비교 가이드 (12월 4일~5일 및 평일 기준)">
+  <meta name="description" content="이태원·을지로 4인 및 7인 에어비앤비 숙소 대표 사진, 주소, 전체 대표 지도 및 가격 비교 가이드">
   <meta name="theme-color" content="#f4efe6">
   <title>이태원 · 을지로 숙소 비교 가이드 (4인 / 7인)</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   <style>
     :root {
       --ink: #18201d;
-      --muted: #626b67;
+      --muted: #5d6662;
       --paper: #f4efe6;
       --card: #fffdf8;
       --line: #dcd4c6;
@@ -39,15 +40,16 @@
 
     a { color: inherit; text-decoration: none; }
     button, input, select { font: inherit; }
+    img { display: block; max-width: 100%; }
 
     .wrap {
-      width: min(1180px, calc(100% - 32px));
+      width: min(1220px, calc(100% - 32px));
       margin-inline: auto;
     }
 
-    /* Hero */
+    /* 상단 헤더 */
     .hero {
-      padding: 56px 0 28px;
+      padding: 48px 0 22px;
     }
     .eyebrow {
       display: inline-flex;
@@ -55,10 +57,9 @@
       align-items: center;
       margin: 0 0 12px;
       color: var(--green);
-      font-size: 0.84rem;
+      font-size: 0.86rem;
       font-weight: 800;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
     .eyebrow::before {
       content: "";
@@ -68,25 +69,25 @@
     }
     h1 {
       margin: 0 0 12px;
-      font-size: clamp(1.75rem, 3.4vw, 2.6rem);
-      line-height: 1.22;
+      font-size: clamp(1.75rem, 3.4vw, 2.55rem);
+      line-height: 1.24;
       letter-spacing: -0.02em;
     }
     .subtitle {
-      margin: 0 0 24px;
+      margin: 0 0 22px;
       color: var(--muted);
-      font-size: 1.02rem;
-      max-width: 780px;
+      font-size: 1.01rem;
+      max-width: 840px;
     }
 
-    /* Notice Banner */
+    /* 안내 상자 */
     .notice-box {
       background: var(--card);
       border: 1px solid var(--line);
       border-left: 5px solid var(--green);
       border-radius: var(--radius);
       padding: 18px 22px;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
       box-shadow: var(--shadow);
     }
     .notice-box strong {
@@ -98,28 +99,28 @@
       margin: 0;
       padding-left: 18px;
       color: var(--muted);
-      font-size: 0.93rem;
+      font-size: 0.92rem;
     }
     .notice-box li + li {
       margin-top: 4px;
     }
 
-    /* Controls Bar */
+    /* 상단 필터 바 */
     .controls {
       position: sticky;
-      top: 12px;
-      z-index: 20;
+      top: 10px;
+      z-index: 900;
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
       align-items: center;
       justify-content: space-between;
-      background: rgb(255 253 248 / 92%);
+      background: rgb(255 253 248 / 95%);
       backdrop-filter: blur(10px);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       padding: 14px 18px;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
       box-shadow: var(--shadow);
     }
     .tab-group {
@@ -133,7 +134,7 @@
       color: var(--ink);
       padding: 8px 14px;
       border-radius: 999px;
-      font-size: 0.9rem;
+      font-size: 0.89rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -159,7 +160,7 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--ink);
     }
     .date-bar input {
@@ -170,7 +171,163 @@
       font-size: 0.85rem;
     }
 
-    /* Quick Airbnb Search Links */
+    /* 대표 지도 섹션 */
+    .map-section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+    }
+    .map-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .map-header h2 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+    .map-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #f5f1e8;
+    }
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot.itaewon { background: var(--green); }
+    .dot.euljiro { background: var(--blue); }
+
+    .map-QuickBtns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .map-focus-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 0.83rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .map-focus-btn:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    #mainMap {
+      width: 100%;
+      height: 460px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      z-index: 1;
+    }
+    .map-caption {
+      margin: 10px 0 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* 커스텀 지도 마커 */
+    .stay-pin {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.76rem;
+      color: #fff;
+      box-shadow: 0 4px 12px rgb(0 0 0 / 28%);
+      border: 2px solid #fff;
+      white-space: nowrap;
+      transform: translate(-50%, -50%);
+    }
+    .stay-pin.itaewon { background: var(--green); }
+    .stay-pin.euljiro { background: var(--blue); }
+    .stay-pin .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgb(255 255 255 / 24%);
+      font-size: 0.72rem;
+    }
+
+    /* 지도 팝업 */
+    .popup-card {
+      width: 240px;
+      font-family: Pretendard, "Noto Sans KR", sans-serif;
+    }
+    .popup-card img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .popup-card h4 {
+      margin: 0 0 4px;
+      font-size: 0.92rem;
+      line-height: 1.35;
+    }
+    .popup-card p {
+      margin: 0 0 6px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .popup-card .p-price {
+      font-weight: 800;
+      color: var(--green);
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+    .popup-btns {
+      display: flex;
+      gap: 6px;
+    }
+    .popup-btns a {
+      flex: 1;
+      text-align: center;
+      padding: 6px 8px;
+      border-radius: 7px;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+    .popup-btns .p-airbnb {
+      background: var(--ink);
+      color: #fff;
+    }
+    .popup-btns .p-map {
+      background: #eef2ff;
+      color: var(--blue);
+    }
+
+    /* 조건별 전체 검색 바로가기 */
     .quick-searches {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -205,9 +362,9 @@
       font-size: 1.1rem;
     }
 
-    /* Section */
+    /* 섹션 및 카드 그리드 */
     .section {
-      margin-bottom: 44px;
+      margin-bottom: 46px;
     }
     .section-head {
       display: flex;
@@ -215,13 +372,13 @@
       align-items: baseline;
       justify-content: space-between;
       gap: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       border-bottom: 2px solid var(--ink);
       padding-bottom: 10px;
     }
     .section-head h2 {
       margin: 0;
-      font-size: 1.4rem;
+      font-size: 1.38rem;
       letter-spacing: -0.01em;
     }
     .section-head .meta {
@@ -230,11 +387,10 @@
       font-weight: 600;
     }
 
-    /* Cards Grid */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
     }
     .card {
       display: flex;
@@ -243,7 +399,7 @@
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      padding: 20px;
+      overflow: hidden;
       box-shadow: var(--shadow);
       transition: transform 0.16s ease, border-color 0.16s ease;
     }
@@ -251,11 +407,58 @@
       transform: translateY(-3px);
       border-color: var(--green);
     }
+    .card-thumb-wrap {
+      position: relative;
+      width: 100%;
+      height: 215px;
+      background: #eae4d7;
+      overflow: hidden;
+    }
+    .card-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .card:hover .card-thumb {
+      transform: scale(1.03);
+    }
+    .pin-num-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgb(24 32 29 / 86%);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      backdrop-filter: blur(4px);
+    }
+    .rating-badge {
+      position: absolute;
+      bottom: 10px;
+      right: 12px;
+      background: rgb(255 253 248 / 92%);
+      color: var(--ink);
+      font-weight: 800;
+      font-size: 0.78rem;
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+
+    .card-body {
+      padding: 18px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+    }
     .badges {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      margin-bottom: 10px;
+      margin-bottom: 9px;
     }
     .badge {
       display: inline-flex;
@@ -272,26 +475,38 @@
     .badge.pick { background: var(--red-soft); color: var(--red); }
 
     .card h3 {
-      margin: 0 0 6px;
-      font-size: 1.08rem;
+      margin: 0 0 8px;
+      font-size: 1.07rem;
       line-height: 1.38;
     }
-    .loc-note {
-      margin: 0 0 12px;
-      color: var(--muted);
-      font-size: 0.87rem;
+    .address-box {
+      background: #f8f4ec;
+      border-radius: 10px;
+      padding: 8px 11px;
+      margin-bottom: 12px;
+      font-size: 0.83rem;
     }
+    .address-box strong {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+    .address-box span {
+      color: var(--muted);
+      font-size: 0.79rem;
+    }
+
     .specs {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     .spec {
-      background: #f5f1e8;
+      background: #f2ede2;
       border-radius: 8px;
       padding: 4px 9px;
-      font-size: 0.82rem;
+      font-size: 0.81rem;
       font-weight: 600;
     }
 
@@ -299,29 +514,55 @@
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
-      padding-top: 14px;
+      padding-top: 12px;
       border-top: 1px dashed var(--line);
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .per-person {
-      font-size: 1.24rem;
+      font-size: 1.22rem;
       font-weight: 800;
       color: var(--green);
     }
     .per-person small {
-      font-size: 0.8rem;
+      font-size: 0.79rem;
       font-weight: 600;
       color: var(--muted);
       margin-right: 4px;
     }
     .total-price {
       text-align: right;
-      font-size: 0.84rem;
+      font-size: 0.83rem;
       color: var(--muted);
     }
     .total-price strong {
       color: var(--ink);
       font-weight: 700;
+    }
+
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .btn-sub {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.81rem;
+      cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease;
+    }
+    .btn-sub:hover {
+      border-color: var(--green);
+      color: var(--green);
     }
 
     .btn-link {
@@ -335,14 +576,14 @@
       color: #fff;
       border-radius: 12px;
       font-weight: 700;
-      font-size: 0.92rem;
+      font-size: 0.91rem;
       transition: background 0.15s ease;
     }
     .btn-link:hover {
       background: var(--green);
     }
 
-    /* Summary Table */
+    /* 요약 비교표 */
     .table-wrap {
       overflow-x: auto;
       background: var(--card);
@@ -353,22 +594,35 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 720px;
-      font-size: 0.9rem;
+      min-width: 860px;
+      font-size: 0.88rem;
     }
     th, td {
-      padding: 12px 14px;
+      padding: 11px 12px;
       text-align: left;
       border-bottom: 1px solid var(--line);
+      vertical-align: middle;
     }
     th {
       background: #f6f2e9;
       font-weight: 800;
-      font-size: 0.83rem;
+      font-size: 0.81rem;
       color: var(--muted);
-      text-transform: uppercase;
     }
     tr:last-child td { border-bottom: none; }
+    .tbl-thumb {
+      width: 72px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+    }
+    .tbl-addr {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
     .tbl-link {
       display: inline-block;
       padding: 5px 10px;
@@ -376,11 +630,24 @@
       color: var(--green);
       border-radius: 8px;
       font-weight: 700;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
+      white-space: nowrap;
     }
     .tbl-link:hover {
       background: var(--green);
       color: #fff;
+    }
+    .tbl-map-btn {
+      display: inline-block;
+      padding: 5px 9px;
+      background: #eef2ff;
+      color: var(--blue);
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.79rem;
+      cursor: pointer;
+      white-space: nowrap;
     }
 
     .footer {
@@ -389,30 +656,28 @@
       font-size: 0.85rem;
       text-align: center;
     }
-
-    .hidden { display: none !important; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header class="hero">
-      <p class="eyebrow">Airbnb Seoul Stay Guide · 4–7 Guests</p>
+      <p class="eyebrow">서울 숙소 비교 가이드 · 4인 / 7인 맞춤</p>
       <h1>이태원 · 을지로 숙소 비교 가이드 (4인 / 7인)</h1>
       <p class="subtitle">
-        <strong>2026년 12월 4일(금) ~ 12월 5일(토) 1박 기준</strong> 예약 가능 숙소와 평일 가성비(인당 2~3만 원대) 숙소를 한눈에 비교하고 바로 에어비앤비 상세 페이지로 이동할 수 있습니다.
+        <strong>2026년 12월 4일(금) ~ 12월 5일(토) 1박 기준</strong> 예약 가능 숙소와 <strong>평일 가성비(인당 2~3만 원대)</strong> 숙소의 대표 사진, 상세 위치(주소), 전체 대표 지도를 한눈에 비교해 보세요.
       </p>
 
       <div class="notice-box">
-        <strong>📌 12월 4일(금) ~ 12월 5일(토) 시세 핵심 요약</strong>
+        <strong>📌 12월 4일(금) ~ 12월 5일(토) 시세 및 지도 이용 안내</strong>
         <ul>
           <li><strong>4인 기준</strong>: 금요일 기준 인당 2~3만 원 이하(총 12만 원 이하)는 이태원 <strong>게스트하우스 다인실/개인실</strong>이 가능하며, 단독/호텔형 숙소는 <strong>총 15만~18만 원(인당 3.75만~4.5만 원)</strong>부터 시작합니다.</li>
           <li><strong>7인 기준 (욕실 2개 이상)</strong>: 연말 금요일 요금 적용으로 현재 예약 가능한 최저가는 <strong>이태원 총 32.4만 원(인당 4.6만 원)</strong>, <strong>을지로 인접권 총 35.8만 원(인당 5.1만 원)</strong>부터 시작합니다.</li>
-          <li>상단에서 <strong>날짜 모드(12/4~5 금요일 vs 평일 가성비)</strong>와 <strong>지역 필터</strong>를 전환할 수 있습니다.</li>
+          <li><strong>대표 지도 및 주소</strong>: 에어비앤비 정책상 정확한 지번/호수는 예약 확정 후 공개되며, 지도와 주소는 에어비앤비에 등록된 <strong>실제 좌표(반경 약 150m 안심 구역) 및 인접 역세권 주소</strong> 기준입니다.</li>
         </ul>
       </div>
     </header>
 
-    <!-- Controls -->
+    <!-- 상단 필터 및 날짜 컨트롤 -->
     <section class="controls" aria-label="필터 및 날짜 설정">
       <div class="tab-group" id="modeTabs">
         <button type="button" class="tab-btn active" data-mode="dec04">📅 12월 4일~5일 (금~토) 기준</button>
@@ -420,9 +685,9 @@
       </div>
 
       <div class="tab-group" id="areaTabs">
-        <button type="button" class="tab-btn active" data-area="all">전체 지역</button>
-        <button type="button" class="tab-btn" data-area="itaewon">이태원 · 용산</button>
-        <button type="button" class="tab-btn" data-area="euljiro">을지로 · 중구 · 종로</button>
+        <button type="button" class="tab-btn active" data-area="all">전체 지역 보기</button>
+        <button type="button" class="tab-btn" data-area="itaewon">이태원 · 용산 권역</button>
+        <button type="button" class="tab-btn" data-area="euljiro">을지로 · 중구 · 종로 권역</button>
       </div>
 
       <div class="date-bar">
@@ -431,98 +696,270 @@
       </div>
     </section>
 
-    <!-- Quick Search Shortcuts -->
+    <!-- 전체 위치 대표 지도 -->
+    <section class="map-section" id="mapSection" aria-label="전체 숙소 위치 대표 지도">
+      <div class="map-header">
+        <h2>🗺️ 전체 숙소 위치 대표 지도</h2>
+        <div class="map-legend">
+          <span class="legend-item"><span class="dot itaewon"></span> 이태원 · 용산 권역</span>
+          <span class="legend-item"><span class="dot euljiro"></span> 을지로 · 중구 · 종로 권역</span>
+        </div>
+      </div>
+      <div class="map-QuickBtns">
+        <button type="button" class="map-focus-btn" id="btnFitAll">🔍 전체 숙소 한눈에 보기</button>
+        <button type="button" class="map-focus-btn" id="btnFitItaewon">🟢 이태원 · 용산 권역 확대</button>
+        <button type="button" class="map-focus-btn" id="btnFitEuljiro">🔵 을지로 · 중구 · 종로 권역 확대</button>
+      </div>
+      <div id="mainMap"></div>
+      <p class="map-caption">
+        💡 지도 위의 번호 마커를 클릭하면 <strong>대표 사진 · 주소 · 1인당 요금 · 에어비앤비 및 네이버 지도 바로가기</strong>를 볼 수 있습니다. 아래 숙소 카드의 <strong>[📍 대표 지도에서 위치 보기]</strong> 버튼을 눌러도 해당 위치로 이동합니다.
+      </p>
+    </section>
+
+    <!-- 조건별 에어비앤비 전체 검색 바로가기 -->
     <section class="quick-searches" aria-label="에어비앤비 조건별 전체 검색 바로가기">
       <a class="quick-link dynamic-search" data-base="https://www.airbnb.co.kr/s/이태원--서울/homes" data-adults="4" data-extra="&price_max=150000" href="https://www.airbnb.co.kr/s/이태원--서울/homes?adults=4&checkin=2026-12-04&checkout=2026-12-05&price_max=150000" target="_blank" rel="noopener noreferrer">
         <div>
-          🔍 이태원 4인 저가 전체 검색
-          <span class="sub">성인 4명 · 15만 원 이하 필터</span>
+          🔍 이태원 4인 저가 숙소 전체 검색
+          <span class="sub">성인 4명 · 15만 원 이하 조건</span>
         </div>
         <span class="arrow">↗</span>
       </a>
       <a class="quick-link dynamic-search" data-base="https://www.airbnb.co.kr/s/을지로--서울/homes" data-adults="4" data-extra="&price_max=160000" href="https://www.airbnb.co.kr/s/을지로--서울/homes?adults=4&checkin=2026-12-04&checkout=2026-12-05&price_max=160000" target="_blank" rel="noopener noreferrer">
         <div>
-          🔍 을지로 4인 저가 전체 검색
-          <span class="sub">성인 4명 · 16만 원 이하 필터</span>
+          🔍 을지로 4인 저가 숙소 전체 검색
+          <span class="sub">성인 4명 · 16만 원 이하 조건</span>
         </div>
         <span class="arrow">↗</span>
       </a>
       <a class="quick-link dynamic-search" data-base="https://www.airbnb.co.kr/s/이태원--서울/homes" data-adults="7" data-extra="&min_bathrooms=2" href="https://www.airbnb.co.kr/s/이태원--서울/homes?adults=7&checkin=2026-12-04&checkout=2026-12-05&min_bathrooms=2" target="_blank" rel="noopener noreferrer">
         <div>
-          🔍 이태원 7인 · 욕실 2개+ 전체 검색
-          <span class="sub">성인 7명 · 욕실 2개 이상 필터</span>
+          🔍 이태원 7인 · 욕실 2개 이상 검색
+          <span class="sub">성인 7명 · 욕실 2개 이상 조건</span>
         </div>
         <span class="arrow">↗</span>
       </a>
       <a class="quick-link dynamic-search" data-base="https://www.airbnb.co.kr/s/을지로--서울/homes" data-adults="7" data-extra="&min_bathrooms=2" href="https://www.airbnb.co.kr/s/을지로--서울/homes?adults=7&checkin=2026-12-04&checkout=2026-12-05&min_bathrooms=2" target="_blank" rel="noopener noreferrer">
         <div>
-          🔍 을지로 7인 · 욕실 2개+ 전체 검색
-          <span class="sub">성인 7명 · 욕실 2개 이상 필터</span>
+          🔍 을지로 7인 · 욕실 2개 이상 검색
+          <span class="sub">성인 7명 · 욕실 2개 이상 조건</span>
         </div>
         <span class="arrow">↗</span>
       </a>
     </section>
 
-    <!-- Main Content Container -->
+    <!-- 숙소 카드 및 요약 비교표 영역 -->
     <main id="contentContainer"></main>
 
     <footer class="footer">
-      정보 확인일: 2026-11-18 · 에어비앤비 실시간 예약 상황에 따라 요금 및 잔여 객실이 변동될 수 있습니다.
+      정보 확인일: 2026년 11월 18일 · 에어비앤비 실시간 예약 상황에 따라 요금 및 잔여 객실이 변동될 수 있습니다.
     </footer>
   </div>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script>
+    // 25개 숙소 메타데이터 (대표 이미지, 위도/경도, 한국어 주소)
+    const ROOM_META = {
+      "1358590399964915052": {
+        image: "https://a0.muscache.com/im/pictures/miso/Hosting-1358590399964915052/original/1bccec90-a6d1-4c0f-bb71-3163213f665c.jpeg",
+        lat: 37.5323,
+        lng: 126.9915,
+        address: "서울특별시 용산구 이태원동 (이태원로·녹사평역 인근)"
+      },
+      "15669514": {
+        image: "https://a0.muscache.com/im/pictures/75afde40-c58c-4ba8-a3c2-99fe3bfcfd2a.jpg",
+        lat: 37.53178,
+        lng: 126.99388,
+        address: "서울특별시 용산구 이태원동 (이태원역 4번 출구 도보 5분·보광로 일대)"
+      },
+      "1677975997656576010": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1677975997656576010/original/72445fba-fd0a-4d8d-971a-e6cdb024dcb2.jpeg",
+        lat: 37.5463,
+        lng: 126.9764,
+        address: "서울특별시 용산구 후암동·남영동 (숙대입구역 인근)"
+      },
+      "953388700815243175": {
+        image: "https://a0.muscache.com/im/pictures/miso/Hosting-953388700815243175/original/4806072a-c7ac-4766-894c-66752408e07d.jpeg",
+        lat: 37.55885,
+        lng: 126.98438,
+        address: "서울특별시 중구 남산동·명동 (명동역 도보 3분·퇴계로 일대)"
+      },
+      "1694044946768857608": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1694044946768857608/original/89a0d273-4efb-4fce-a973-ab4135e8a7b0.jpeg",
+        lat: 37.5618,
+        lng: 126.9899,
+        address: "서울특별시 중구 필동·충무로 (충무로역·명동역 인근)"
+      },
+      "1594204436741726299": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1594204436741726299/original/cf88f435-86ad-4801-b6e8-b626ff617012.jpeg",
+        lat: 37.565,
+        lng: 127.0087,
+        address: "서울특별시 중구 광희동·을지로6가 (동대문역사문화공원역 앞)"
+      },
+      "1425833988771355994": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTQyNTgzMzk4ODc3MTM1NTk5NA==/original/c4870d88-4a25-456c-a635-3bba957cdfac.jpeg",
+        lat: 37.5434,
+        lng: 126.9882,
+        address: "서울특별시 용산구 용산동2가 (해방촌 신흥로 일대)"
+      },
+      "50762520": {
+        image: "https://a0.muscache.com/im/pictures/miso/Hosting-50762520/original/cc3df4f9-03e6-43ab-8206-bbc6f8d60529.jpeg",
+        lat: 37.53621,
+        lng: 126.98857,
+        address: "서울특별시 용산구 이태원동 (녹사평역·경리단길 입구 일대)"
+      },
+      "1702616911470157238": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1702616911470157238/original/8c5e17c9-be7f-4251-bd47-e8e41a0fe7ae.jpeg",
+        lat: 37.5724,
+        lng: 127.0105,
+        address: "서울특별시 종로구 창신동·종로6가 (동대문역 도보 2분)"
+      },
+      "1791147199850014346": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1791147199850014346/original/153dd7e1-af38-4bf9-b45c-f57eeb49d684.jpeg",
+        lat: 37.5393,
+        lng: 126.9934,
+        address: "서울특별시 용산구 이태원동 (회나무로·경리단길 인근)"
+      },
+      "1792552332280337586": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1792552332280337586/original/f556921f-fb8a-49ce-ac5b-8b11b20050a0.jpeg",
+        lat: 37.56869,
+        lng: 126.98794,
+        address: "서울특별시 종로구 관철동 (종각역 도보 3분·을지로입구 인접)"
+      },
+      "1578819857081444866": {
+        image: "https://a0.muscache.com/im/pictures/airflow/Hosting-1578819857081444866/original/18dd7452-a64b-426e-8a2b-68fd19bb0c64.jpg",
+        lat: 37.534,
+        lng: 126.9921,
+        address: "서울특별시 용산구 이태원동 (이태원역·녹사평역 사이)"
+      },
+      "1528244920445269576": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1528244920445269576/original/4de0bf15-44d0-48fa-aed8-83bb19ac2a78.jpeg",
+        lat: 37.563,
+        lng: 126.99062,
+        address: "서울특별시 중구 충무로2가·초동 (명동역·충무로역 도보 5분)"
+      },
+      "1781617345647074960": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1781617345647074960/original/553d5c37-4a0a-46b7-bc41-f8cb31ca2fe5.png",
+        lat: 37.5648,
+        lng: 126.9992,
+        address: "서울특별시 중구 주교동·을지로4가 (을지로4가역 도보 3분)"
+      },
+      "1791326676677620257": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1791326676677620257/original/7c871ecc-7981-4c61-8a1f-1922a61fed5b.jpeg",
+        lat: 37.5631,
+        lng: 127.0008,
+        address: "서울특별시 중구 오장동·을지로4가 (을지로4가역·충무로역 도보권)"
+      },
+      "1423534647442853003": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1423534647442853003/original/b55065f2-a90c-445d-864d-871ac72635df.jpeg",
+        lat: 37.5402,
+        lng: 126.99151,
+        address: "서울특별시 용산구 이태원동 (경리단길·회나무로 조용한 주택가)"
+      },
+      "1703392771467780065": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1703392771467780065/original/bf50f62d-d876-4b3c-9281-a836f09173e8.jpeg",
+        lat: 37.56659,
+        lng: 127.00066,
+        address: "서울특별시 중구 산림동·을지로4가 (을지로4가역 도보 4분)"
+      },
+      "1739128126725895729": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1739128126725895729/original/d4da390c-fa73-40b5-a841-659a9176112d.png",
+        lat: 37.54078,
+        lng: 126.98907,
+        address: "서울특별시 용산구 용산동2가·이태원동 (해방촌·경리단길 인근)"
+      },
+      "1788357369503740457": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1788357369503740457/original/b5c00f48-6ce4-4198-b31a-2dbcb852ccb3.jpeg",
+        lat: 37.5746,
+        lng: 127.0025,
+        address: "서울특별시 종로구 효제동·종로5가 (종로5가역·광장시장 도보권)"
+      },
+      "1702837260101734209": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1702837260101734209/original/4970f876-b571-48e2-ab57-12394e72e505.png",
+        lat: 37.57936,
+        lng: 127.00551,
+        address: "서울특별시 종로구 이화동·연건동 (혜화역·대학로 인근)"
+      },
+      "1624322799351882235": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1611977779676412993/original/a42cec33-f6b0-482e-ab1f-738364af3cb1.jpeg",
+        lat: 37.5748,
+        lng: 127.0047,
+        address: "서울특별시 종로구 충신동·종로5가 (종로5가역·동대문역 도보권)"
+      },
+      "1255968032774426498": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTI1NTk2ODAzMjc3NDQyNjQ5OA%3D%3D/original/2b4d5e0f-9c7a-4c6e-93fc-39385a7a02cc.jpeg",
+        lat: 37.53287,
+        lng: 126.99421,
+        address: "서울특별시 용산구 한남동·이태원동 (이태원역 도보 2분)"
+      },
+      "1479481058892763284": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTExOTkwMzE0NzU0OTEzNzE2MA==/original/ef03fdb0-0657-427e-8791-16c13b5ce242.jpeg",
+        lat: 37.53327,
+        lng: 126.99514,
+        address: "서울특별시 용산구 한남동 (이태원역 도보 3분)"
+      },
+      "1782211429153496857": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1782211429153496857/original/e418843f-ebe0-4d22-a454-df0183750014.png",
+        lat: 37.56451,
+        lng: 126.99949,
+        address: "서울특별시 중구 주교동·을지로4가 (을지로4가역 도보 2분)"
+      },
+      "1783697756296469018": {
+        image: "https://a0.muscache.com/im/pictures/hosting/Hosting-1783697756296469018/original/1dc7526b-b5fe-4349-8f8d-50d851e340a4.jpeg",
+        lat: 37.5649,
+        lng: 126.9919,
+        address: "서울특별시 중구 초동·을지로3가 (을지로3가역 도보 3분)"
+      }
+    };
+
     const DATA = {
       dec04: {
-        label: "2026-12-04 (금) ~ 2026-12-05 (토) 1박 기준",
+        label: "2026년 12월 4일(금) ~ 12월 5일(토) 1박 기준",
         checkIn: "2026-12-04",
         checkOut: "2026-12-05",
         groups: [
           {
-            title: "1. 4인 기준 (12월 4일~5일 예약 가능 최저가)",
+            title: "1. 4인 기준 (12월 4일~5일 예약 가능 최저가 순)",
             subtitle: "4인 총액 11.1만 ~ 18만 원 (1인당 2.78만 ~ 4.5만 원)",
             adults: 4,
             items: [
               {
                 id: "1358590399964915052",
-                name: "굿스테이 이태원 _ 6인용 객실",
+                name: "굿스테이 이태원 6인용 다인실 객실",
                 area: "itaewon",
                 areaLabel: "이태원",
-                locNote: "용산구 이태원 근처 · 게스트하우스 다인실",
                 bath: "공용 욕실",
                 bathCount: 1,
                 specs: ["최대 6인", "6인 다인실", "침대 6개", "공용 욕실"],
                 total: 111348,
                 perPerson: 27837,
-                rating: "★ 4.55 (33개)",
-                pick: "3만 원 이하"
+                rating: "★ 4.55 (후기 33개)",
+                pick: "인당 3만 원 이하"
               },
               {
                 id: "15669514",
-                name: "아마존게스트하우스 (여성전용 6인실)",
+                name: "아마존 게스트하우스 (여성전용 6인실)",
                 area: "itaewon",
                 areaLabel: "이태원",
-                locNote: "이태원역 4번 출구 도보 5분 · 여성 전용",
                 bath: "공용 욕실",
                 bathCount: 1,
                 specs: ["최대 6인", "여성전용 다인실", "2층침대 3개", "공용 욕실"],
                 total: 116576,
                 perPerson: 29144,
-                rating: "★ 4.67 (51개)",
-                pick: "3만 원 이하 (여성)"
+                rating: "★ 4.67 (후기 51개)",
+                pick: "인당 3만 원 이하 (여성)"
               },
               {
                 id: "1677975997656576010",
-                name: "서울 중심가 가성비 개인실 (2층침대 3개)",
+                name: "서울 중심가 가성비 단독 개인실 (2층침대 3개)",
                 area: "itaewon",
                 areaLabel: "이태원 인접",
-                locNote: "용산구 중심가 · 단독 개인실",
                 bath: "공용 욕실",
                 bathCount: 1,
-                specs: ["4인 이상", "개인실", "2층침대 3개", "공용 욕실"],
+                specs: ["4인 이상", "단독 개인실", "2층침대 3개", "공용 욕실"],
                 total: 126600,
                 perPerson: 31650,
-                rating: "★ 4.33 (21개)",
+                rating: "★ 4.33 (후기 21개)",
                 pick: "개인실 가성비"
               },
               {
@@ -530,55 +967,51 @@
                 name: "[명동역 3분] 연말 초특가 숙소 단독 사용",
                 area: "euljiro",
                 areaLabel: "을지로·명동",
-                locNote: "명동역 도보 3분 · 을지로 도보권",
                 bath: "욕실 1개",
                 bathCount: 1,
                 specs: ["최대 6인", "집 전체 단독", "침실 1 · 침대 1", "욕실 1개"],
                 total: 150000,
                 perPerson: 37500,
-                rating: "★ 4.27 (172개)",
+                rating: "★ 4.27 (후기 172개)",
                 pick: "중구 단독 최저가"
               },
               {
                 id: "1694044946768857608",
-                name: "패밀리룸 (전용욕실) #1",
+                name: "충무로·명동 패밀리룸 (전용 욕실 1호)",
                 area: "euljiro",
                 areaLabel: "을지로·명동",
-                locNote: "중구 명동/을지로 인접 · 호텔형 객실",
                 bath: "전용 욕실 1개",
                 bathCount: 1,
-                specs: ["최대 4인", "호텔 객실", "퀸침대 2개", "전용 욕실 1개"],
+                specs: ["최대 4인", "호텔형 객실", "퀸침대 2개", "전용 욕실 1개"],
                 total: 157500,
                 perPerson: 39375,
-                rating: "★ 3.00 (4개)",
+                rating: "★ 3.00 (후기 4개)",
                 pick: ""
               },
               {
                 id: "1594204436741726299",
-                name: "하이메이트 동대문 (Quadruple 4베드룸)",
+                name: "하이메이트 동대문 (4인용 침대 4개 객실)",
                 area: "euljiro",
                 areaLabel: "을지로4가 인접",
-                locNote: "동대문역사문화공원역 앞 (을지로4가 1정거장)",
                 bath: "전용 욕실 1개",
                 bathCount: 1,
-                specs: ["최대 4인", "호텔 객실", "싱글침대 4개", "전용 욕실 1개"],
+                specs: ["최대 4인", "호텔형 객실", "싱글침대 4개", "전용 욕실 1개"],
                 total: 168000,
                 perPerson: 42000,
-                rating: "★ 4.67 (3개)",
+                rating: "★ 4.67 (후기 3개)",
                 pick: "각자 침대 4개"
               },
               {
                 id: "1425833988771355994",
-                name: "진영의 게스트하우스 HBC (집 전체)",
+                name: "진영의 게스트하우스 해방촌 (집 전체 독채)",
                 area: "itaewon",
                 areaLabel: "이태원·해방촌",
-                locNote: "용산구 해방촌/녹사평 인근 · 집 전체",
                 bath: "욕실 1개",
                 bathCount: 1,
-                specs: ["최대 4인", "집 전체", "침실 2 · 침대 2", "욕실 1개"],
+                specs: ["최대 4인", "집 전체 독채", "침실 2 · 침대 2", "욕실 1개"],
                 total: 180000,
                 perPerson: 45000,
-                rating: "★ 4.95 (79개)",
+                rating: "★ 4.95 (후기 79개)",
                 pick: "이태원 독채 최저"
               }
             ]
@@ -590,101 +1023,94 @@
             items: [
               {
                 id: "50762520",
-                name: "멋진 숙소 침실 3개 욕실 2개",
+                name: "이태원 녹사평 멋진 독채 숙소 (침실 3개 · 욕실 2개)",
                 area: "itaewon",
                 areaLabel: "이태원",
-                locNote: "용산구 녹사평역 인근 · 집 전체",
                 bath: "욕실 2개",
                 bathCount: 2,
-                specs: ["최대 10인", "집 전체", "침실 3 · 침대 5", "욕실 2개"],
+                specs: ["최대 10인", "집 전체 독채", "침실 3 · 침대 5", "욕실 2개"],
                 total: 324280,
                 perPerson: 46326,
-                rating: "★ 4.61 (185개)",
+                rating: "★ 4.61 (후기 185개)",
                 pick: "이태원 최저가"
               },
               {
                 id: "1702616911470157238",
-                name: "따뜻한 100년 가옥 1층 단독 (동대문역 2분)",
+                name: "따뜻한 100년 가옥 1층 단독 (동대문역 도보 2분)",
                 area: "euljiro",
                 areaLabel: "을지로 인접",
-                locNote: "동대문역 도보 2분 · 광장시장/DDP/을지로 권역",
                 bath: "욕실 2개",
                 bathCount: 2,
-                specs: ["최대 7인", "집 전체", "침실 3 · 침대 4", "욕실 2개"],
+                specs: ["최대 7인", "집 전체 단독", "침실 3 · 침대 4", "욕실 2개"],
                 total: 358440,
                 perPerson: 51206,
-                rating: "★ 4.89 (28개)",
+                rating: "★ 4.89 (후기 28개)",
                 pick: "인접권 최저가"
               },
               {
                 id: "1791147199850014346",
-                name: "N-Seoul Tower View / Itaewon House",
+                name: "남산타워 전망 이태원 하우스 (최대 10인 독채)",
                 area: "itaewon",
                 areaLabel: "이태원",
-                locNote: "이태원역 인근 · 남산타워뷰 집 전체",
                 bath: "욕실 2개",
                 bathCount: 2,
-                specs: ["최대 10인", "집 전체", "침실 3 · 침대 5", "욕실 2개"],
+                specs: ["최대 10인", "집 전체 독채", "침실 3 · 침대 5", "욕실 2개"],
                 total: 401280,
                 perPerson: 57326,
-                rating: "★ 5.00 (3개)",
-                pick: ""
+                rating: "★ 5.00 (후기 3개)",
+                pick: "남산타워 전망"
               },
               {
                 id: "1792552332280337586",
-                name: "종각역 3분 · 한옥풍 넓은 프라이빗 욕조 + 습식 사우나",
+                name: "종각역 3분 · 한옥풍 넓은 전용 욕조와 습식 사우나",
                 area: "euljiro",
                 areaLabel: "을지로 인접",
-                locNote: "종각역 도보 3분 (을지로1~2가 도보권)",
                 bath: "욕실 2개",
                 bathCount: 2,
                 specs: ["최대 8인", "호실 전체", "침실 2 · 침대 4", "욕실 2개"],
                 total: 417000,
                 perPerson: 59571,
-                rating: "★ 4.67 (6개)",
+                rating: "★ 4.67 (후기 6개)",
                 pick: "을지로 도보권"
               },
               {
                 id: "1578819857081444866",
-                name: "[StayPachira 6F] 도심뷰 루프탑 · 욕실 2개 · EV",
+                name: "[스테이파치라 6층] 도심 전망 루프탑 · 욕실 2개 · 승강기",
                 area: "itaewon",
                 areaLabel: "이태원·해방촌",
-                locNote: "용산구 해방촌 · 루프탑 레지던스 전체",
                 bath: "욕실 2개",
                 bathCount: 2,
                 specs: ["최대 8인", "레지던스 전체", "침실 2 · 침대 6", "욕실 2개"],
                 total: 432000,
                 perPerson: 61714,
-                rating: "★ 4.96 (47개)",
+                rating: "★ 4.96 (후기 47개)",
                 pick: "침대 6개·루프탑"
               },
               {
                 id: "1528244920445269576",
-                name: "[패밀리아파트2] MS Stay 명동 (합법숙소)",
+                name: "[패밀리아파트 2호] 엠에스 스테이 명동 (합법 숙소)",
                 area: "euljiro",
                 areaLabel: "을지로·중구",
-                locNote: "명동역·충무로역 도보 5분",
                 bath: "욕실 2개",
                 bathCount: 2,
                 specs: ["최대 8인", "호실 전체", "침실 2 · 침대 4", "욕실 2개"],
                 total: 574362,
                 perPerson: 82052,
-                rating: "★ 4.90 (10개)",
+                rating: "★ 4.90 (후기 10개)",
                 pick: "중구 내 최저가"
               },
               {
                 id: "1781617345647074960",
-                name: "[NEW] 방 3 · 화장실 2 · 퀸침대 4 (을지로4가역 3분)",
+                name: "[신규] 방 3개 · 화장실 2개 · 퀸침대 4개 (을지로4가역 3분)",
                 area: "euljiro",
                 areaLabel: "을지로4가",
-                locNote: "중구 을지로4가역 도보 3분",
                 bath: "욕실 2개",
                 bathCount: 2,
-                specs: ["최대 10인", "독채", "침실 3 · 퀸침대 4", "욕실 2개"],
+                specs: ["최대 10인", "독채 펜션", "침실 3 · 퀸침대 4", "욕실 2개"],
                 total: 609000,
                 perPerson: 87000,
-                rating: "★ 5.00 (8개)",
-                pick: "을지로역세권"
+                rating: "★ 5.00 (후기 8개)",
+                pick: "을지로 역세권"
               }
             ]
           }
@@ -702,58 +1128,54 @@
             items: [
               {
                 id: "1791326676677620257",
-                name: "[2026 Open] 패밀리 스위트룸 (을지로·충무로)",
+                name: "[2026 신규 오픈] 패밀리 스위트룸 (을지로·충무로)",
                 area: "euljiro",
                 areaLabel: "을지로·충무로",
-                locNote: "을지로4가역 인근 · 충무로역 도보 8분",
                 bath: "전용 욕실 1개",
                 bathCount: 1,
                 specs: ["최대 4인", "원룸형 객실", "더블침대 2개", "욕실 1개"],
                 total: 90732,
                 perPerson: 22683,
-                rating: "★ 5.00 (2개)",
+                rating: "★ 5.00 (후기 2개)",
                 pick: "인당 2.2만 원"
               },
               {
                 id: "1423534647442853003",
-                name: "[신규오픈] 이태원 조용한 주택가 / 남산뷰",
+                name: "[신규 오픈] 이태원 조용한 주택가 / 남산 전망 독채",
                 area: "itaewon",
                 areaLabel: "이태원",
-                locNote: "용산구 이태원 중심 주택가 · 집 전체",
                 bath: "욕실 1개",
                 bathCount: 1,
-                specs: ["최대 6인", "집 전체", "침실 2 · 퀸침대 3", "욕실 1개"],
+                specs: ["최대 6인", "집 전체 독채", "침실 2 · 퀸침대 3", "욕실 1개"],
                 total: 99983,
                 perPerson: 24996,
-                rating: "★ 4.86 (50개)",
+                rating: "★ 4.86 (후기 50개)",
                 pick: "인당 2.5만 원"
               },
               {
                 id: "1703392771467780065",
-                name: "[Layer] 오픈특가 을지로4가역 도보 4분",
+                name: "[레이어] 오픈 특가 을지로4가역 도보 4분 숙소",
                 area: "euljiro",
                 areaLabel: "을지로4가",
-                locNote: "중구 을지로4가역 도보 4분 · 주방/세탁기",
                 bath: "전용 욕실 1개",
                 bathCount: 1,
                 specs: ["최대 4인", "원룸형 객실", "퀸침대 2개", "욕실 1개"],
                 total: 106508,
                 perPerson: 26627,
-                rating: "★ 5.00 (8개)",
+                rating: "★ 5.00 (후기 8개)",
                 pick: "을지로 역세권"
               },
               {
                 id: "1739128126725895729",
-                name: "[신규오픈] 이태원 중심 핫플레이스 3룸 4베드",
+                name: "[신규 오픈] 이태원 중심 방 3개 · 침대 4개 넓은 거실",
                 area: "itaewon",
                 areaLabel: "이태원",
-                locNote: "녹사평·이태원 인근 · 넓은 거실",
                 bath: "욕실 1개",
                 bathCount: 1,
-                specs: ["최대 8인", "집 전체", "침실 3 · 침대 4", "욕실 1개"],
+                specs: ["최대 8인", "집 전체 독채", "침실 3 · 침대 4", "욕실 1개"],
                 total: 119976,
                 perPerson: 29994,
-                rating: "★ 4.94 (17개)",
+                rating: "★ 4.94 (후기 17개)",
                 pick: "방 3개·침대 4개"
               }
             ]
@@ -765,114 +1187,106 @@
             items: [
               {
                 id: "50762520",
-                name: "멋진 숙소 침실 3개 욕실 2개",
+                name: "이태원 녹사평 멋진 독채 숙소 (침실 3개 · 욕실 2개)",
                 area: "itaewon",
                 areaLabel: "이태원",
-                locNote: "용산구 녹사평 인근 · 집 전체",
                 bath: "욕실 2개",
                 bathCount: 2,
-                specs: ["최대 10인", "집 전체", "침실 3 · 침대 5", "욕실 2개"],
+                specs: ["최대 10인", "집 전체 독채", "침실 3 · 침대 5", "욕실 2개"],
                 total: 174600,
                 perPerson: 24943,
-                rating: "★ 4.61 (185개)",
+                rating: "★ 4.61 (후기 185개)",
                 pick: "평일 인당 2.5만"
               },
               {
                 id: "1788357369503740457",
-                name: "종로·을지로권 남산타워뷰 전용 옥상 10층 독채",
+                name: "종로·을지로권 남산타워 전망 전용 옥상 10층 독채",
                 area: "euljiro",
                 areaLabel: "을지로 인접",
-                locNote: "종로5가역 인근 · 광장시장/을지로 도보권",
                 bath: "욕실 2개",
                 bathCount: 2,
                 specs: ["최대 13인", "호실 전체", "침실 3 · 침대 6", "욕실 2개"],
                 total: 196000,
                 perPerson: 28000,
-                rating: "★ 4.50 (4개)",
+                rating: "★ 4.50 (후기 4개)",
                 pick: "평일 인당 2.8만"
               },
               {
                 id: "1702837260101734209",
-                name: "단체·가족 퀸침대 4 · 욕실 2 (종로/혜화)",
+                name: "단체·가족 퀸침대 4개 · 욕실 2개 (종로/혜화)",
                 area: "euljiro",
                 areaLabel: "을지로 북측",
-                locNote: "종로구 혜화역 인근 · 집 전체",
                 bath: "욕실 2개",
                 bathCount: 2,
-                specs: ["최대 8인", "집 전체", "침실 2 · 퀸침대 4", "욕실 2개"],
+                specs: ["최대 8인", "집 전체 독채", "침실 2 · 퀸침대 4", "욕실 2개"],
                 total: 208568,
                 perPerson: 29795,
-                rating: "★ 4.82 (34개)",
+                rating: "★ 4.82 (후기 34개)",
                 pick: "평일 인당 2.9만"
               },
               {
                 id: "1624322799351882235",
-                name: "종로5가역 / 광장시장 / 명동 / DDP 단체숙소",
+                name: "종로5가역 · 광장시장 · 명동 · 동대문 단체 숙소",
                 area: "euljiro",
                 areaLabel: "을지로 인접",
-                locNote: "종로5가역·동대문역 도보권",
                 bath: "욕실 2개",
                 bathCount: 2,
-                specs: ["최대 10인", "집 전체", "침실 2 · 침대 5", "욕실 2개"],
+                specs: ["최대 10인", "집 전체 독채", "침실 2 · 침대 5", "욕실 2개"],
                 total: 216535,
                 perPerson: 30934,
-                rating: "★ 4.94 (36개)",
+                rating: "★ 4.94 (후기 36개)",
                 pick: "후기 우수"
               },
               {
                 id: "1255968032774426498",
-                name: "조용한 안식처: 이태원역 2분 거리",
+                name: "조용한 안식처: 이태원역 도보 2분 거리 독채",
                 area: "itaewon",
                 areaLabel: "이태원",
-                locNote: "용산구 한남동 · 이태원역 도보 2분",
                 bath: "욕실 2개",
                 bathCount: 2,
-                specs: ["최대 8인", "집 전체", "침실 3 · 침대 3", "욕실 2개"],
+                specs: ["최대 8인", "집 전체 독채", "침실 3 · 침대 3", "욕실 2개"],
                 total: 218746,
                 perPerson: 31249,
-                rating: "★ 4.74 (82개)",
+                rating: "★ 4.74 (후기 82개)",
                 pick: "이태원역 2분"
               },
               {
                 id: "1479481058892763284",
-                name: "[stay IN] 넓은 3베드룸/2욕실 이태원역 3분",
+                name: "[스테이 인] 넓은 침실 3개 · 욕실 2개 (이태원역 3분)",
                 area: "itaewon",
                 areaLabel: "이태원",
-                locNote: "용산구 한남동 · 이태원역 도보 3분 (6인 기준 예시)",
                 bath: "욕실 2개",
                 bathCount: 2,
-                specs: ["최대 8인", "집 전체", "침실 3 · 침대 4", "욕실 2개"],
+                specs: ["최대 8인", "집 전체 독채", "침실 3 · 침대 4", "욕실 2개"],
                 total: 264117,
                 perPerson: 37731,
-                rating: "★ 4.83 (18개)",
+                rating: "★ 4.83 (후기 18개)",
                 pick: "슈퍼호스트"
               },
               {
                 id: "1782211429153496857",
-                name: "을지로4가역 2분 / 서울타워뷰 / 전용루프탑",
+                name: "을지로4가역 2분 · 서울타워 전망 전용 루프탑 독채",
                 area: "euljiro",
                 areaLabel: "을지로4가",
-                locNote: "을지로4가역 도보 2분 (6인 평일 기준 예시)",
                 bath: "욕실 2개",
                 bathCount: 2,
-                specs: ["최대 9인", "집 전체", "침실 2 · 침대 5", "욕실 2개"],
+                specs: ["최대 9인", "집 전체 독채", "침실 2 · 침대 5", "욕실 2개"],
                 total: 277125,
                 perPerson: 39589,
-                rating: "★ 5.00 (6개)",
+                rating: "★ 5.00 (후기 6개)",
                 pick: "을지로 루프탑"
               },
               {
                 id: "1783697756296469018",
-                name: "Grand Open R4T3 / 방 4개 · 욕실 3개 단체숙소",
+                name: "을지로3가 신규 오픈 방 4개 · 욕실 3개 대형 단체 숙소",
                 area: "euljiro",
                 areaLabel: "을지로3가",
-                locNote: "을지로3가역 도보 3분 · 최고급 대형 숙소",
                 bath: "욕실 3개",
                 bathCount: 3,
-                specs: ["최대 10인", "집 전체", "침실 4 · 퀸침대 5", "욕실 3개"],
+                specs: ["최대 10인", "집 전체 독채", "침실 4 · 퀸침대 5", "욕실 3개"],
                 total: 649976,
                 perPerson: 92854,
-                rating: "★ 5.00 (12개)",
+                rating: "★ 5.00 (후기 12개)",
                 pick: "욕실 3개·방 4개"
               }
             ]
@@ -883,6 +1297,9 @@
 
     let currentMode = "dec04";
     let currentArea = "all";
+    let map = null;
+    let markerLayer = null;
+    let markersByKey = {};
 
     const contentContainer = document.getElementById("contentContainer");
     const checkInInput = document.getElementById("checkInInput");
@@ -898,6 +1315,28 @@
       return `https://www.airbnb.co.kr/rooms/${id}?adults=${adults}&check_in=${ci}&check_out=${co}`;
     }
 
+    function buildGoogleMapUrl(lat, lng) {
+      return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+    }
+
+    function buildNaverMapUrl(address) {
+      const cleanQuery = address.replace(/\(.*\)/, "").trim();
+      return `https://map.naver.com/p/search/${encodeURIComponent(cleanQuery)}`;
+    }
+
+    function initMap() {
+      map = L.map("mainMap", {
+        center: [37.554, 126.995],
+        zoom: 13,
+        scrollWheelZoom: true
+      });
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap"
+      }).addTo(map);
+      markerLayer = L.layerGroup().addTo(map);
+    }
+
     function updateQuickSearchLinks() {
       const ci = checkInInput.value || "2026-12-04";
       const co = checkOutInput.value || "2026-12-05";
@@ -909,10 +1348,23 @@
       });
     }
 
+    function focusStayOnMap(key) {
+      const entry = markersByKey[key];
+      if (!entry) return;
+      document.getElementById("mapSection").scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => {
+        map.setView(entry.latlng, 16, { animate: true });
+        entry.marker.openPopup();
+      }, 300);
+    }
+    window.focusStayOnMap = focusStayOnMap;
+
     function render() {
       updateQuickSearchLinks();
       const modeData = DATA[currentMode];
       let html = "";
+      let seq = 0;
+      const visibleEntries = [];
 
       modeData.groups.forEach(group => {
         const filtered = group.items.filter(item =>
@@ -928,35 +1380,69 @@
             </div>
             <div class="grid">
               ${filtered.map(item => {
+                seq += 1;
+                const meta = ROOM_META[item.id] || {};
+                const key = `${item.id}_${group.adults}`;
+                visibleEntries.push({
+                  seq,
+                  key,
+                  item,
+                  adults: group.adults,
+                  meta
+                });
+
                 const url = buildRoomUrl(item.id, group.adults);
+                const gmapUrl = buildGoogleMapUrl(meta.lat, meta.lng);
+                const nmapUrl = buildNaverMapUrl(meta.address || item.areaLabel);
                 const areaClass = item.area === "itaewon" ? "itaewon" : "euljiro";
                 const bathClass = item.bathCount >= 2 ? "bath2" : "bath1";
+
                 return `
-                  <article class="card">
+                  <article class="card" id="card-${key}">
                     <div>
-                      <div class="badges">
-                        <span class="badge ${areaClass}">${item.areaLabel}</span>
-                        <span class="badge ${bathClass}">${item.bath}</span>
-                        ${item.pick ? `<span class="badge pick">${item.pick}</span>` : ""}
+                      <div class="card-thumb-wrap">
+                        <img class="card-thumb" src="${meta.image}" alt="${item.name} 대표 사진" loading="lazy">
+                        <span class="pin-num-badge">지도 #${seq} · ${group.adults}인</span>
+                        <span class="rating-badge">${item.rating}</span>
                       </div>
-                      <h3>${item.name}</h3>
-                      <p class="loc-note">${item.locNote} · ${item.rating}</p>
-                      <div class="specs">
-                        ${item.specs.map(s => `<span class="spec">${s}</span>`).join("")}
-                      </div>
-                    </div>
-                    <div>
-                      <div class="price-box">
-                        <div class="per-person">
-                          <small>1인당 (${group.adults}인)</small>${formatKRW(item.perPerson)}
+                      <div class="card-body">
+                        <div>
+                          <div class="badges">
+                            <span class="badge ${areaClass}">${item.areaLabel}</span>
+                            <span class="badge ${bathClass}">${item.bath}</span>
+                            ${item.pick ? `<span class="badge pick">${item.pick}</span>` : ""}
+                          </div>
+                          <h3>${seq}. ${item.name}</h3>
+                          <div class="address-box">
+                            <strong>📍 주소: ${meta.address}</strong>
+                            <span>위도 ${meta.lat} · 경도 ${meta.lng} (에어비앤비 등록 위치)</span>
+                          </div>
+                          <div class="specs">
+                            ${item.specs.map(s => `<span class="spec">${s}</span>`).join("")}
+                          </div>
                         </div>
-                        <div class="total-price">
-                          1박 총액 <strong>${formatKRW(item.total)}</strong>
+                        <div>
+                          <div class="price-box">
+                            <div class="per-person">
+                              <small>1인당 (${group.adults}인)</small>${formatKRW(item.perPerson)}
+                            </div>
+                            <div class="total-price">
+                              1박 총액 <strong>${formatKRW(item.total)}</strong>
+                            </div>
+                          </div>
+                          <div class="card-actions">
+                            <button type="button" class="btn-sub" onclick="focusStayOnMap('${key}')">
+                              📍 대표 지도에서 보기
+                            </button>
+                            <a class="btn-sub" href="${gmapUrl}" target="_blank" rel="noopener noreferrer">
+                              🗺️ 구글 지도 위치 ↗
+                            </a>
+                          </div>
+                          <a class="btn-link" href="${url}" target="_blank" rel="noopener noreferrer">
+                            에어비앤비 숙소 바로가기 ↗
+                          </a>
                         </div>
                       </div>
-                      <a class="btn-link" href="${url}" target="_blank" rel="noopener noreferrer">
-                        에어비앤비 숙소 바로가기 ↗
-                      </a>
                     </div>
                   </article>
                 `;
@@ -966,49 +1452,51 @@
         `;
       });
 
-      // Summary Table Section
-      const allRows = [];
-      modeData.groups.forEach(group => {
-        group.items
-          .filter(item => (currentArea === "all" ? true : item.area === currentArea))
-          .forEach(item => {
-            allRows.push({ ...item, adults: group.adults });
-          });
-      });
-
+      // 전체 요약 비교표
       html += `
         <section class="section">
           <div class="section-head">
             <h2>📋 전체 요약 비교표 (${modeData.label})</h2>
-            <span class="meta">우측 버튼 클릭 시 날짜·인원이 자동 입력된 에어비앤비로 이동합니다</span>
+            <span class="meta">대표 사진, 주소, 지도 위치 이동 및 에어비앤비 예약 바로가기</span>
           </div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>기준</th>
-                  <th>지역</th>
-                  <th>숙소명</th>
+                  <th>번호</th>
+                  <th>대표 사진</th>
+                  <th>인원 기준</th>
+                  <th>권역</th>
+                  <th>숙소명 및 주소</th>
                   <th>욕실</th>
                   <th>1박 총액</th>
                   <th>1인당 금액</th>
-                  <th>평점</th>
-                  <th>바로가기</th>
+                  <th>지도 위치</th>
+                  <th>숙소 예약</th>
                 </tr>
               </thead>
               <tbody>
-                ${allRows.map(r => `
+                ${visibleEntries.map(e => `
                   <tr>
-                    <td><strong>${r.adults}인</strong></td>
-                    <td>${r.areaLabel}</td>
-                    <td><strong>${r.name}</strong></td>
-                    <td>${r.bath}</td>
-                    <td>${formatKRW(r.total)}</td>
-                    <td><strong style="color:var(--green)">${formatKRW(r.perPerson)}</strong></td>
-                    <td>${r.rating}</td>
+                    <td><strong>#${e.seq}</strong></td>
+                    <td><img class="tbl-thumb" src="${e.meta.image}" alt="${e.item.name}" loading="lazy"></td>
+                    <td><strong>${e.adults}인</strong></td>
+                    <td>${e.item.areaLabel}</td>
                     <td>
-                      <a class="tbl-link" href="${buildRoomUrl(r.id, r.adults)}" target="_blank" rel="noopener noreferrer">
-                        열기 ↗
+                      <strong>${e.item.name}</strong>
+                      <span class="tbl-addr">📍 ${e.meta.address}</span>
+                    </td>
+                    <td>${e.item.bath}</td>
+                    <td>${formatKRW(e.item.total)}</td>
+                    <td><strong style="color:var(--green)">${formatKRW(e.item.perPerson)}</strong></td>
+                    <td>
+                      <button type="button" class="tbl-map-btn" onclick="focusStayOnMap('${e.key}')">
+                        📍 지도 #${e.seq}
+                      </button>
+                    </td>
+                    <td>
+                      <a class="tbl-link" href="${buildRoomUrl(e.item.id, e.adults)}" target="_blank" rel="noopener noreferrer">
+                        에어비앤비 ↗
                       </a>
                     </td>
                   </tr>
@@ -1020,6 +1508,48 @@
       `;
 
       contentContainer.innerHTML = html;
+      renderMapMarkers(visibleEntries);
+    }
+
+    function renderMapMarkers(entries) {
+      if (!map || !markerLayer) return;
+      markerLayer.clearLayers();
+      markersByKey = {};
+      const bounds = [];
+
+      entries.forEach(e => {
+        if (!e.meta.lat || !e.meta.lng) return;
+        const latlng = [e.meta.lat, e.meta.lng];
+        bounds.push(latlng);
+
+        const pinIcon = L.divIcon({
+          className: "",
+          html: `<div class="stay-pin ${e.item.area}"><span class="num">${e.seq}</span>${Math.round(e.item.perPerson / 1000)}만</div>`,
+          iconSize: [68, 28],
+          iconAnchor: [34, 14]
+        });
+
+        const popupHtml = `
+          <div class="popup-card">
+            <img src="${e.meta.image}" alt="${e.item.name}">
+            <h4>#${e.seq}. ${e.item.name}</h4>
+            <p>📍 ${e.meta.address}<br>${e.adults}인 기준 · ${e.item.bath} · ${e.item.rating}</p>
+            <div class="p-price">1인당 ${formatKRW(e.item.perPerson)} (총 ${formatKRW(e.item.total)})</div>
+            <div class="popup-btns">
+              <a class="p-airbnb" href="${buildRoomUrl(e.item.id, e.adults)}" target="_blank" rel="noopener noreferrer">숙소 열기 ↗</a>
+              <a class="p-map" href="${buildGoogleMapUrl(e.meta.lat, e.meta.lng)}" target="_blank" rel="noopener noreferrer">구글 지도 ↗</a>
+            </div>
+          </div>
+        `;
+
+        const marker = L.marker(latlng, { icon: pinIcon }).bindPopup(popupHtml);
+        marker.addTo(markerLayer);
+        markersByKey[e.key] = { marker, latlng };
+      });
+
+      if (bounds.length > 0) {
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+      }
     }
 
     document.querySelectorAll("#modeTabs .tab-btn").forEach(btn => {
@@ -1042,9 +1572,21 @@
       });
     });
 
+    document.getElementById("btnFitAll").addEventListener("click", () => {
+      const allLatLngs = Object.values(markersByKey).map(v => v.latlng);
+      if (allLatLngs.length) map.fitBounds(allLatLngs, { padding: [40, 40], maxZoom: 15 });
+    });
+    document.getElementById("btnFitItaewon").addEventListener("click", () => {
+      map.setView([37.5365, 126.9905], 15, { animate: true });
+    });
+    document.getElementById("btnFitEuljiro").addEventListener("click", () => {
+      map.setView([37.5675, 126.9985], 14, { animate: true });
+    });
+
     checkInInput.addEventListener("change", render);
     checkOutInput.addEventListener("change", render);
 
+    initMap();
     render();
   </script>
 </body>
